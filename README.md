@@ -8,7 +8,7 @@ These steps use the `venv` module, which is available on Ubuntu in the `python3-
 
 ```
 # Checkout
-git clone /path/to/repo/tornado-test-api.git
+git clone git@github.com:mbaum2000/tornado-test-api.git
 cd tornado-test-api/
 
 # Virtualenv
