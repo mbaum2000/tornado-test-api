@@ -3,7 +3,17 @@ from src.models.widget import Widget
 
 
 class WidgetDAO(DAO):
-    def list_widgets(self):
+    def count_widgets(self):
+        sql = """
+            SELECT
+                COUNT(id)
+            FROM widgets
+        """
+
+        result = self.engine.execute(sql)
+        return result.scalar()
+
+    def list_widgets(self, limit=100, offset=0):
         sql = """
             SELECT
                 id,
@@ -12,9 +22,13 @@ class WidgetDAO(DAO):
                 created,
                 updated
             FROM widgets
+            LIMIT :offset, :limit
         """
 
-        result = self.engine.execute(sql)
+        result = self.engine.execute(sql, {
+            'limit': limit,
+            'offset': offset,
+        })
         rows = result.fetchall()
 
         return [Widget.from_row(row) for row in rows]
@@ -32,7 +46,7 @@ class WidgetDAO(DAO):
         """
 
         result = self.engine.execute(sql, {
-            'id': id
+            'id': id,
         })
         row = result.fetchone()
         if row is None:

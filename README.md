@@ -48,6 +48,13 @@ Returns a list of Widgets:
     }
 ]
 ```
+
+Optionally specify url args `limit` and `offset` for pagination:
+
+`GET` `/widget?limit=10?offset=0`
+
+This endpoint also sets the `X-Total-Count` header with the total number of Widgets, regardless of pagination.
+
 ---
 `POST` `/widget`
 
