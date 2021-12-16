@@ -24,6 +24,7 @@ dao = WidgetDAO(engine=get_engine(db_file))
 
 class WidgetsHandler(JSONHandler):
     def get(self):
+        # TODO: Add Pagination
         try:
             widgets = dao.list_widgets()
             self.write(output_json(widgets))
@@ -45,6 +46,16 @@ class WidgetsHandler(JSONHandler):
             parts = data.get('parts')
             if parts is None:
                 raise MissingArgumentError("'parts'")
+            try:
+                parts = int(parts)
+            except ValueError:
+                raise BadRequest(
+                    'Invalid argument: parts is not a number'
+                )
+            if parts < 0:
+                raise BadRequest(
+                    'Invalid argument: parts must not be negative'
+                )
 
             widget = Widget(
                 name=name,
@@ -92,6 +103,16 @@ class WidgetHandler(JSONHandler):
             parts = data.get('parts')
             if parts is None:
                 raise MissingArgumentError("'parts'")
+            try:
+                parts = int(parts)
+            except ValueError:
+                raise BadRequest(
+                    'Invalid argument: parts is not a number'
+                )
+            if parts < 0:
+                raise BadRequest(
+                    'Invalid argument: parts must not be negative'
+                )
 
             widget.name = name
             widget.parts = parts
