@@ -1,7 +1,10 @@
 from tornado.web import (
     MissingArgumentError,
 )
-from src.dao.base import get_engine
+from src.dao.base import (
+    get_engine,
+    get_default_db_file,
+)
 from src.dao.widget import WidgetDAO
 from src.models.widget import Widget
 from sqlalchemy.exc import (
@@ -14,19 +17,17 @@ from .base import (
     NotFoundError,
     ResourceConflict,
 )
-import os
-
-
-# The DB_FILENAME should probably be defined in the app itself.
-db_file = os.environ.get('DB_FILENAME', 'sqlite:///widgets.db')
-dao = WidgetDAO(engine=get_engine(db_file))
 
 
 class WidgetsHandler(JSONHandler):
+    def initialize(self):
+        super().initialize()
+        self.dao = WidgetDAO(engine=get_engine(get_default_db_file()))
+
     def get(self):
         # TODO: Add Pagination
         try:
-            widgets = dao.list_widgets()
+            widgets = self.dao.list_widgets()
             self.write(output_json(widgets))
         except Exception:
             raise
@@ -61,8 +62,8 @@ class WidgetsHandler(JSONHandler):
                 name=name,
                 parts=parts,
             )
-            id = dao.create_widget(widget)
-            widget = dao.get_widget(id)
+            id = self.dao.create_widget(widget)
+            widget = self.dao.get_widget(id)
             self.write(output_json(widget))
 
         except IntegrityError:
@@ -73,11 +74,12 @@ class WidgetsHandler(JSONHandler):
 
 class WidgetHandler(JSONHandler):
     def initialize(self):
-        self.set_header('Content-Type', 'application/json')
+        super().initialize()
+        self.dao = WidgetDAO(engine=get_engine(get_default_db_file()))
 
     def get(self, id):
         try:
-            widget = dao.get_widget(id)
+            widget = self.dao.get_widget(id)
             if widget is None:
                 raise NotFoundError(f"A Widget with id '{id}' was not found")
             self.write(output_json(widget))
@@ -86,7 +88,7 @@ class WidgetHandler(JSONHandler):
 
     def put(self, id):
         try:
-            widget = dao.get_widget(id)
+            widget = self.dao.get_widget(id)
             if widget is None:
                 raise NotFoundError(f"A Widget with id '{id}' was not found")
 
@@ -117,8 +119,8 @@ class WidgetHandler(JSONHandler):
             widget.name = name
             widget.parts = parts
 
-            dao.update_widget(widget)
-            widget = dao.get_widget(id)
+            self.dao.update_widget(widget)
+            widget = self.dao.get_widget(id)
 
             self.write(output_json(widget))
 
@@ -129,10 +131,10 @@ class WidgetHandler(JSONHandler):
 
     def delete(self, id):
         try:
-            widget = dao.get_widget(id)
+            widget = self.dao.get_widget(id)
             if widget is None:
                 raise NotFoundError(f"A Widget with id '{id}' was not found")
-            dao.delete_widget(id)
+            self.dao.delete_widget(id)
             self.set_status(204)
         except Exception:
             raise

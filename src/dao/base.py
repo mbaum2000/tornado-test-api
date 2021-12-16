@@ -3,21 +3,37 @@ import os
 
 
 engines = {}
+config = {
+    'default_db_file': os.environ.get(
+        'DB_FILENAME',
+        'sqlite:///widgets.db'
+    ),
+}
+
+
+def get_default_db_file():
+    return config.get('default_db_file')
+
+
+def set_default_db_file(filename):
+    config['default_db_file'] = filename
 
 
 def get_engine(filename):
     if filename not in engines:
         echo = os.environ.get('DEBUG_SQL', '0') == '1'
-        engines[filename] = create_engine(filename, echo=echo)
+        engine = create_engine(filename, echo=echo)
+        engines[filename] = engine
+        DAO.init_db(engine)
     return engines[filename]
 
 
 class DAO:
     def __init__(self, engine):
         self.engine = engine
-        self.init_db()
 
-    def init_db(self):
+    @staticmethod
+    def init_db(engine):
         # Ideally, this would not be in the application, but would be
         # administered independently.  However, to simplify the startup
         # of this sample app, it will be run here.
@@ -31,4 +47,4 @@ class DAO:
                 UNIQUE(`name`)
             );
         """
-        self.engine.execute(schema)
+        engine.execute(schema)

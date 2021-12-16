@@ -122,3 +122,10 @@ Some status codes and messages are:
  * `404`: "A Widget with id '{id}' was not found"
  * `409`: "A Widget with name '{name}' exists"
  * `500`: "Server Error"
+
+## Tests
+
+Unit tests can be run by executing:
+```
+python3 -m tornado.testing test.py
+```
