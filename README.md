@@ -29,7 +29,7 @@ Once running, the API will be accessible at http://localhost:8080/widget
 The application will use the following environment variables:
  * `DEBUG=1`: Turn on Tornado Application Debug
  * `DEBUG_SQL=1`: Turn on SQLAlchemy Query Echo
- * `PORT=8080`: Turn on SQLAlchemy Query Echo
+ * `PORT=8080`: Change web server port.
  * `DB_FILENAME=sqlite:///widgets.db`: Specify a different SQLite Database
 
 ## API
@@ -51,7 +51,7 @@ Returns a list of Widgets:
 ---
 `POST` `/widget`
 
-Accepts JSON payload of `name` and `parts`:
+Creates a new Widget. Accepts JSON payload of `name` and `parts`:
 ```
 {
     "name": "foo",
@@ -71,7 +71,7 @@ Returns created object:
 ---
 `GET` `/widget/<id>`
 
-Returns requested object:
+Returns requested Widget by `id`:
 ```
 {
     "id": 1,
@@ -84,7 +84,7 @@ Returns requested object:
 ---
 `PUT` `/widget/<id>`
 
-Accepts JSON payload of `name` and `parts`:
+Updates a Widget by `id`.  Accepts JSON payload of `name` and `parts`:
 ```
 {
     "name": "bar",
@@ -104,7 +104,7 @@ Returns updated object:
 ---
 `DELETE` `/widget/<id>`
 
-Deletes object and returns `204`
+Deletes a Widget by `id` and returns `204`.
 
 ## Errors
 
